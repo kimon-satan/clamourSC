@@ -1,5 +1,4 @@
 
-<FILE>
 <CLAMOUR_SYNTHS>
 
 
@@ -9,6 +8,7 @@
 			<NAME>pulseRate</NAME>
 			<MIN_VAL>4</MIN_VAL>
 			<MAX_VAL>20</MAX_VAL>
+			<ABS_VAL>10</ABS_VAL>
 			<WARP>lin</WARP>
 			<UNIT>cps</UNIT>
 		</PARAM>
@@ -16,6 +16,7 @@
 			<NAME>resFilFreq</NAME>
 			<MIN_VAL>100</MIN_VAL>
 			<MAX_VAL>2000</MAX_VAL>
+			<ABS_VAL>1000</ABS_VAL>
 			<WARP>exp</WARP>
 			<UNIT>Hz</UNIT>
 		</PARAM>
@@ -23,6 +24,7 @@
 			<NAME>resAtt</NAME>
 			<MIN_VAL>0</MIN_VAL>
 			<MAX_VAL>1</MAX_VAL>
+			<ABS_VAL>0.01</ABS_VAL>
 			<WARP>lin</WARP>
 			<UNIT>secs</UNIT>
 		</PARAM>
@@ -30,6 +32,7 @@
 			<NAME>resAmp</NAME>
 			<MIN_VAL>0</MIN_VAL>
 			<MAX_VAL>1</MAX_VAL>
+			<ABS_VAL>0.2</ABS_VAL>
 			<WARP>lin</WARP>
 			<UNIT></UNIT>
 		</PARAM>
@@ -37,6 +40,7 @@
 			<NAME>pan</NAME>
 			<MIN_VAL>-1</MIN_VAL>
 			<MAX_VAL>1</MAX_VAL>
+			<ABS_VAL>0</ABS_VAL>
 			<WARP>lin</WARP>
 			<UNIT></UNIT>
 		</PARAM>
@@ -47,4 +51,3 @@
 
 </CLAMOUR_SYNTHS>
 
-</FILE>
