@@ -21,18 +21,23 @@
 ~newSynth=nil;
 ~newSynth = OSCresponderNode(nil, '/startSynth', {|i, r, msg|
 
-	var argArray = Array.new();
+	var argArray = [\att, msg[4], \dec, msg[5]];
+
+
 	msg.postln;
+
+	//needs asr code again
 
 	~synthDict.at(msg[2].asSymbol).do{|item|
 
 		argArray = argArray.add(item.at(\name));
-		argArray = argArray.add(msg[item.at(\index) + 3]);
+		argArray = argArray.add(msg[item.at(\index) + 6]);
 
 
 	};
 
-	~synthStore.put(msg[1], Synth.new(msg[2].asSymbol, argArray));
+	~synthStore.at(msg[1]).set(\gate, 0); //just incase
+	~synthStore.put(msg[1], Synth.new((msg[2] ++ msg[3]).asSymbol, argArray));
 
 }).add;
 
@@ -42,7 +47,7 @@
 
 
 	var argArray = Array.new();
-	msg.postln;
+	//msg.postln;
 
 	~synthDict.at(msg[2].asSymbol).do{|item|
 

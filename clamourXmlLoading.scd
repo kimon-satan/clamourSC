@@ -1,7 +1,7 @@
 (
 
 
-var path = "/Users/simonkatan/Documents/SuperCollider/Code/Projects/clamour/clamourSynths.xml";
+var path = "C:/Users/kimonsatan/code/of_v0.8.0_win_cb_release/apps/interactiveProjects/clamourMedia/bin/data/XMLs/clamourSynths.xml";
 
 ~synthDict = ();
 
