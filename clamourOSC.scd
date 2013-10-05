@@ -1,5 +1,6 @@
 //OSC nodes
 
+
 (
 
 ~synthStore = ();
@@ -14,6 +15,15 @@
 		~synthStore.at(key).set(\gate, 0);
 	});
 
+	fork{
+	~masterBus.free;
+	s.sync;
+	~masterBus = Bus.audio(s, 2);
+	~masterOut.free;
+	s.sync;
+	~masterOut = Synth.new(\master, [\amp, 2, \inBus, ~masterBus]);
+	};
+
 
 }).add;
 
@@ -21,12 +31,11 @@
 ~newSynth=nil;
 ~newSynth = OSCresponderNode(nil, '/startSynth', {|i, r, msg|
 
-	var argArray = [\att, msg[4], \dec, msg[5]];
+	var argArray = [\att, msg[4], \dec, msg[5]], fileName;
 
 
 	msg.postln;
 
-	//needs asr code again
 
 	~synthDict.at(msg[2].asSymbol).do{|item|
 
@@ -37,6 +46,20 @@
 	};
 
 	~synthStore.at(msg[1]).set(\gate, 0); //just incase
+
+
+	fileName = msg[~synthDict.at(msg[2].asSymbol).size() + 6];
+		//find the audio file by name
+
+	if(fileName != "none"){
+		fileName.postln;
+		argArray.add(\buf);
+		argArray.add(~soundFileDict.at(fileName.asSymbol));
+	};
+
+	argArray.add(\outBus);
+	argArray.add(~masterBus);
+
 	~synthStore.put(msg[1], Synth.new((msg[2] ++ msg[3]).asSymbol, argArray));
 
 }).add;
@@ -47,7 +70,7 @@
 
 
 	var argArray = Array.new();
-	//msg.postln;
+	msg.postln;
 
 	~synthDict.at(msg[2].asSymbol).do{|item|
 
