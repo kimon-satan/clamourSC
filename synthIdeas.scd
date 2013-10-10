@@ -96,4 +96,95 @@
 
 )
 
+//zone fire sounds
 
+(
+
+{
+	var env = EnvGen.kr(Env.perc(0.5,0.01));
+
+	VarSaw.ar([30, 31],0, env, 0.2) * env;
+
+}.play;
+
+
+)
+
+
+//beep
+
+(
+
+{
+	var sig;
+	sig = SinOsc.ar(1500,0,0.2) * EnvGen.kr(Env.linen(0.01,0.1,0.01),doneAction:2);
+	sig = Pan2.ar(sig,0);
+
+}.play;
+
+)
+
+//rumbles etc
+(
+
+{
+	var sig;
+	sig = LFNoise0.ar(100) * EnvGen.kr(Env.linen(0.01,0.5,0.01),doneAction:2);
+	sig = LPF.ar(sig, 100);
+	sig = Pan2.ar(sig,0);
+
+
+}.play;
+
+)
+
+//
+
+(
+
+{
+	var sig, env;
+	env = EnvGen.kr(Env.linen(0.01,1.0,0.01),doneAction:2);
+	sig = Pulse.ar(1000,0.1,0.02) * env;
+
+	sig = Pan2.ar(sig,0)
+
+}.play
+
+)
+
+//static
+(
+
+{
+	var sig, env;
+	//env = EnvGen.kr(Env.linen(0.01,0.5,0.01), doneAction:2);
+	sig = HPF.ar(WhiteNoise.ar(1),MouseX.kr(10000,50)) * Dust.ar(100);// * env;
+	sig = Pan2.ar(sig,0)
+}.play;
+
+)
+
+
+//shit beep
+(
+{
+	var sig, env;
+	env = EnvGen.kr(Env.linen(0.01,0.5,0.01), doneAction:2);
+	sig = SinOsc.ar(5000,0,5).clip * 0.2 * env;
+	sig = Pan2.ar(sig,0)
+
+}.play;
+)
+
+
+(
+{
+	var sig, env;
+	env = EnvGen.kr(Env.linen(0.01,1.0,0.01), doneAction:2);
+	sig = Saw.ar(Saw.kr(48,105,200),0.2) * env;
+	sig = Pan2.ar(sig,0)
+
+}.play;
+
+)

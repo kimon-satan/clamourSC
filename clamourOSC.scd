@@ -3,6 +3,8 @@
 
 (
 
+
+
 ~synthStore = ();
 
 ~ini.remove;
@@ -16,14 +18,26 @@
 	});
 
 	fork{
-	~masterBus.free;
-	s.sync;
-	~masterBus = Bus.audio(s, 2);
-	~masterOut.free;
-	s.sync;
-	~masterOut = Synth.new(\master, [\amp, 2, \inBus, ~masterBus]);
+		~masterBus.free;
+		s.sync;
+		~masterBus = Bus.audio(s, 2);
+		~masterOut.free;
+		s.sync;
+		~masterOut = Synth.new(\master, [\amp, 2, \inBus, ~masterBus]);
 	};
 
+
+}).add;
+
+~killSound.remove;
+~killSound=nil;
+~killSound = OSCresponderNode(nil, '/killAllSynths',{|i, r, msg|
+
+	msg.postln;
+
+	~synthStore.keysDo({|key|
+		~synthStore.at(key).set(\gate, 0);
+	});
 
 }).add;
 
@@ -49,7 +63,7 @@
 
 
 	fileName = msg[~synthDict.at(msg[2].asSymbol).size() + 6];
-		//find the audio file by name
+	//find the audio file by name
 
 	if(fileName != "none"){
 		fileName.postln;
