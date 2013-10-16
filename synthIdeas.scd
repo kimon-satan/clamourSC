@@ -85,7 +85,7 @@
 (
 
 {
-	|modSpeed = 10, att = 1.0, dec = 2.0, amp = 0.2|
+	|modSpeed = 10, att = 1.0, dec = 2.0, amp = 0.8|
 	var sig, freqEnv;
 	freqEnv = Line.kr(25,100,att);
 	sig = SyncSaw.ar(freqEnv,LFNoise0.kr(modSpeed,200,50),0.2);
@@ -188,3 +188,30 @@
 }.play;
 
 )
+
+
+
+//fluttery .. not quite right
+(
+
+{|freq = 500,  speedModFreq = 4, speedModMul = 5, speedModAdd = 15, rqModFreq = 5|
+	var sig, speedMod, rqMod, env;
+
+	rqMod =  SinOsc.kr(1/rqModFreq,0,0.04, 0.05);
+	speedMod = SinOsc.kr(1/speedModFreq,0,speedModMul, speedModAdd);
+	sig = RLPF.ar(WhiteNoise.ar(0.2), freq, rqMod) * LFPulse.kr(speedMod);
+	sig = Pan2.ar(sig, 0);
+	env = EnvGen.kr(Env.linen(0.5,10,0.5), doneAction:2);
+	sig = sig * env;
+
+}.play;
+
+)
+
+
+
+
+
+
+
+

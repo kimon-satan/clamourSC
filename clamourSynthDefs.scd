@@ -16,7 +16,7 @@ SynthDef(\master, {|inBus = 0, outBus = 0 , amp = 1|
 
 }).send(s);
 
-SynthDef(\pulseGlitcherASR, {|gate = 1, att = 0, dec = 0, pulseRate = 4, resFilFreq = 1000, resAtt = 0.01, resAmp = 0.2, pan = 0|
+SynthDef(\pulseGlitcherASR, {|gate = 1, att = 0, dec = 0, pulseRate = 4, resFilFreq = 1000, resAtt = 0.01, resAmp = 0.2, pan = 0, amp = 0.2|
 
 	var sig, seed, r_sig, r_env, pulseSpec, resFilSpec;
 
@@ -25,7 +25,7 @@ SynthDef(\pulseGlitcherASR, {|gate = 1, att = 0, dec = 0, pulseRate = 4, resFilF
 	r_env = EnvGen.kr(Env.perc(resAtt, 0), seed);
 	r_sig = RHPF.ar(r_sig, resFilFreq, 0.01) * r_env * 0.1 * resAmp;
 
-	sig = r_sig + seed;
+	sig = r_sig + seed * amp;
 
 	sig = Pan2.ar(sig, pan);
 	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
@@ -35,9 +35,9 @@ SynthDef(\pulseGlitcherASR, {|gate = 1, att = 0, dec = 0, pulseRate = 4, resFilF
 
 
 
-SynthDef(\omASR,{|gate = 1, att = 10, dec = 0.01, pan = 0, freq = 25, wmod = 0.2, resamp = 0, amp = 0.2|
+SynthDef(\omASR,{|gate = 1, att = 10, dec = 0.01, pan = 0, freq = 25, wmod = 0.2, resamp = 0, amp = 0.2, mute = 0|
 
-	//ideally will be a a gradual build up use just a flat version for now.
+	//ideally will be a a gradual build up use just a lat version for now.
 	var sig, env, out, wamp, swell;
 
 	swell = SinOsc.kr(rrand(0.05,0.1),0,0.2,0.5);
@@ -45,7 +45,7 @@ SynthDef(\omASR,{|gate = 1, att = 10, dec = 0.01, pan = 0, freq = 25, wmod = 0.2
 	sig = VarSaw.ar(freq,0, wamp, swell);
 	sig = sig + RHPF.ar(sig, rrand(1000,2000), 0.02, resamp);
 	sig = Pan2.ar(sig, pan) * amp;
-
+	sig = sig * (1 - EnvGen.kr(Env.asr(0.02,1,0.02),mute));
 	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
 	Out.ar(~masterBus, sig);
 
@@ -152,6 +152,19 @@ SynthDef(\monoPlayerAR, {|att = 0.01, dec = 0.01, gate = 1, buf = 1,
 
 }).send(s);
 
+SynthDef(\monoPlayerASR, {|att = 0.01, dec = 0.01, gate = 1, buf = 1,
+	pan = 0, rate = 1, amp = 0.5, loop = 1|
+
+	var sig, dur;
+
+	dur = BufDur.kr(buf);
+	sig = PlayBuf.ar(1, buf, rate, loop:1);
+	sig = Pan2.ar(sig, pan);
+	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
 
 SynthDef(\brownExploderAR,{|att = 0, dec = 0, amp = 0.5, pan = 0|
 
@@ -168,7 +181,7 @@ SynthDef(\whiteExploderAR,{|att = 0, dec = 0, amp = 0.5, pan = 0|
 
 	var sig;
 
-	sig = BrownNoise.ar(amp);
+	sig = WhiteNoise.ar(amp);
 	sig = Pan2.ar(sig, pan);
 	sig = sig * EnvGen.kr(Env.perc(att,dec, 1, 4),doneAction:2);
 	Out.ar(~masterBus, sig);
@@ -279,6 +292,80 @@ SynthDef.new(\servoASR, {arg gate = 1, att = 0.5, dec = 1.0,  amp = 1,
 	Out.ar(~masterBus,sig + sig2);
 
 }).send(s);
+
+SynthDef.new(\klankerASR, {arg gate = 1, att = 0.5, dec = 1.0, bFreq = 100, fund = 100, detune = 0.2, amp = 0.5, pan = 0, swellRate = 2, swellMul = 0.25, swellAdd = 0.75;
+
+	var sig, freqs,amps, decs;
+
+	freqs = Array.fill(10,{|c| bFreq + (fund * c) + (Rand(detune, -1 * detune) * fund)});
+	amps = Array.fill(10,{1});
+	decs = Array.fill(10,{1});
+
+	sig = Klank.ar(`[freqs, amps, decs], BPF.ar(PinkNoise.ar(0.003),500,0.5)) * 6;
+	sig = sig * SinOsc.kr(1/swellRate,0,0.25,0.75);
+
+	sig = Pan2.ar(sig, pan) * amp;
+	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
+
+SynthDef.new(\klankerAR, {arg gate = 1, att = 0.5, dec = 1.0, bFreq = 100, fund = 100, detune = 0.2, amp = 0.5, pan = 0;
+
+	var sig, freqs,amps, decs;
+
+	freqs = Array.fill(10,{|c| bFreq + (fund * c) + (Rand(detune, -1 * detune) * fund)});
+	amps = Array.fill(10,{1}).normalizeSum();
+	decs = Array.fill(10,{1});
+
+	sig = Klank.ar(`[freqs, amps, decs], PinkNoise.ar(0.001));
+
+	sig = Pan2.ar(sig,pan) * amp  * EnvGen.kr(Env.linen(att,dec/2,dec/2),doneAction:2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
+SynthDef.new(\flutteryASR, {|gate = 1, att = 0.5, dec = 1.0, pan = 0, amp = 0.5, freq = 500,  speedModFreq = 4, speedModMul = 5, speedModAdd = 15, rqModFreq = 5|
+
+	var sig, speedMod, rqMod, env;
+
+	rqMod =  SinOsc.kr(1/rqModFreq,0,0.04, 0.05);
+	speedMod = SinOsc.kr(1/speedModFreq,0,speedModMul, speedModAdd);
+	sig = RLPF.ar(WhiteNoise.ar(1), freq, rqMod) * LFPulse.kr(speedMod);
+
+	sig = Pan2.ar(sig, pan) * amp;
+	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
+
+SynthDef.new(\didgeryASR, {|gate = 1, att = 0.5, dec = 1.0, pan = 0, amp = 0.5, noiseFreq = 100, pulseRate = 10, pulseMul = 0.5, filRate = 2, filMul = 250, filAdd = 1000, rq = 0.2|
+
+	var sig;
+
+	sig = RLPF.ar(LFNoise0.ar(noiseFreq) * LFPulse.ar(pulseRate,pulseMul,1 - pulseMul)
+	,SinOsc.kr(1/filRate,0,filMul,filAdd)
+	,rq);
+
+sig = Pan2.ar(sig, pan) * amp;
+	sig = sig * EnvGen.kr(Env.asr(att,1,dec),gate, doneAction:2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
+
+SynthDef.new(\flyClicheAR, {|gate = 1, att = 0.5, dec = 1.0, lFreq = 200, hFreq = 300, amp = 0.2, pan = 0 |
+	var sig;
+
+	sig = Pan2.ar(Gendy1.ar(minfreq: lFreq, maxfreq: hFreq, mul: amp),pan);
+	sig = sig * EnvGen.kr(Env.linen(att,0,dec), doneAction: 2);
+	Out.ar(~masterBus, sig);
+
+}).send(s);
+
+)
 
 
 

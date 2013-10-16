@@ -6,25 +6,31 @@
 var fileNames  = [
 
 	"test",
-	"aSymbol",
-	"butThereIsMore",
-	"exactly",
-	"forExample",
+	"click",
+	"clickON",
+	"clickOFF",
+
+	//intro files
+	"everything",
+	"iAgree",
 	"iCanDivide",
-	"iCanMake",
-	"alternatively",
 	"iHaveCreated",
+	"iHaveCreated2",
 	"iImagine",
 	"imInterested",
-	"nowLetMe",
-	"oneOfYou",
-	"orRather",
-	"thisPiece",
-	"thisPiece2",
-	"wellOne",
-	"yesThats",
+	"letUsReturn",
+	"nowEveryone",
+	"soFar",
+	"soHereWe",
+	"soIveManaged",
+	"soWho",
+	"thatWasGreat",
+	"theConcept",
+	"well",
 	"youMight",
-	"click"
+	"andThis",
+	"butWhatUse",
+	"aButton"
 
 ];
 
